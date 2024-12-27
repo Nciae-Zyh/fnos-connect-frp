@@ -23,3 +23,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
         }
     }
 });
+
+window.addEventListener('keydown',(event: KeyboardEvent) => {
+    if(event.key.toLowerCase() === 'f5'){
+        ipcRenderer.send('reload-window');
+    }
+})

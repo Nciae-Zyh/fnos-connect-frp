@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import {app, BrowserWindow, dialog, Menu, ipcRenderer, ipcMain, globalShortcut} from 'electron';
+import {app, BrowserWindow, dialog, Menu, ipcRenderer, ipcMain, globalShortcut,webFrame } from 'electron';
 import path from 'path';
 import * as ipaddr from 'ipaddr.js';
 import fs from 'fs';
@@ -8,24 +8,6 @@ import {spawn} from "child_process";
 import config from "../forge.config";
 
 let mainWindow: BrowserWindow;
-
-const templateMenu = [
-    {
-        label: '设置',
-        submenu: [
-            {
-                label: '配置frp名称',
-                click: async () => {
-                    const isDev = process.env.NODE_ENV === 'development';
-                    const dialogPath = isDev
-                        ? path.join(__dirname, '../../static/frp/configDialog.html') // 开发环境
-                        : path.join(process.resourcesPath, '/configDialog.html'); // 生产环境
-                    mainWindow.loadFile(dialogPath)
-                }
-            }
-        ]
-    }
-]
 
 const createWindow = () => {
     app.commandLine.appendSwitch('ignore-certificate-errors');
@@ -54,7 +36,7 @@ const createWindow = () => {
             ? path.join(__dirname, '../../static/frp/configDialog.html') // 开发环境
             : path.join(process.resourcesPath, '/configDialog.html'); // 生产环境
         mainWindow.loadFile(dialogPath)
-    })
+    });
 
     if (!ret) {
         console.log('Shortcut registration failed');
@@ -73,6 +55,10 @@ const saveConfig = (configData) => {
 ipcMain.on('save-config', (event, configData) => {
     stopFrpc()
     saveConfig(configData)
+})
+ipcMain.on('reload-window',(event) => {
+    stopFrpc()
+    runFrpc()
 })
 let frpcProcess: ReturnType<typeof spawn> | null = null;
 const runFrpc = async (): void => {
@@ -102,7 +88,7 @@ const runFrpc = async (): void => {
 serverPort = ${configJSON.port}
 
 [[visitors]]
-name = "p2p_fnos_visitor"
+name = "${configJSON.name}_visitor"
 type = "xtcp"
 # 要访问的 P2P 代理的名称
 serverName = "${configJSON.name}"
