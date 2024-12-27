@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置系统</title>
+</head>
+<body>
+<form id="dataConfig">
+    <label for="dataConfigIp">
+        frp服务器：
+    </label>
+    <input type="text" id="dataConfigIp" name="dataConfigIp"/><br><br>
+    <label for="dataConfigName">
+        frp服务名称：
+    </label>
+    <input type="text" id="dataConfigName" name="dataConfigName"/><br><br>
+    <label for="dataConfigSecretKey">
+        frp服务密钥：
+    </label>
+    <input type="text" id="dataConfigSecretKey" name="dataConfigSecretKey"/><br><br>
+    <label for="dataConfigPort">
+        frp服务端口：
+    </label>
+    <input type="text" id="dataConfigPort" name="dataConfigPort"/><br><br>
+</form>
+<button type="button" onclick="saveConfig()">
+保存
+</button>
+<script>
+    function saveConfig() {
+        const configData = {
+            ip: document.getElementById("dataConfigIp").value,
+            name: document.getElementById("dataConfigName").value,
+            secretKey: document.getElementById("dataConfigSecretKey").value,
+            port: document.getElementById("dataConfigPort").value,
+        }
+        try{
+            window.electronAPI.sendMessage('save-config',configData)
+        }catch (e) {
+            alert(JSON.stringify(e.message))
+        }
+    }
+
+    try{
+        window.electronAPI.fs.readFile().then(res => {
+            const data = JSON.parse(res)
+            document.getElementById("dataConfigIp").value = data.ip
+            document.getElementById("dataConfigName").value = data.name
+            document.getElementById("dataConfigSecretKey").value = data.secretKey
+            document.getElementById("dataConfigPort").value = data.port
+        });
+    }catch (e) {
+        alert(e.message)
+    }
+</script>
+</body>
+</html>
