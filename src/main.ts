@@ -1,11 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import {app, BrowserWindow, dialog, Menu,ipcRenderer,ipcMain} from 'electron';
+import {app, BrowserWindow, dialog, Menu, ipcRenderer, ipcMain} from 'electron';
 import path from 'path';
 import * as ipaddr from 'ipaddr.js';
 import fs from 'fs';
 import {spawn} from "child_process";
 import config from "../forge.config";
+
 let mainWindow: BrowserWindow;
 
 const templateMenu = [
@@ -28,7 +29,8 @@ const templateMenu = [
 const createWindow = () => {
     app.commandLine.appendSwitch('ignore-certificate-errors');
     // Create the browser window.
-     mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
+        autoHideMenuBar: true,
         width: 800,
         height: 600,
         webPreferences: {
@@ -51,16 +53,16 @@ const saveConfig = (configData) => {
     const configFilePath = isDev
         ? path.join(__dirname, '../../static/config.json') // 开发环境
         : path.join(process.resourcesPath, 'config.json'); // 生产环境
-    fs.writeFileSync(configFilePath,JSON.stringify(configData))
+    fs.writeFileSync(configFilePath, JSON.stringify(configData))
     stopFrpc()
     runFrpc();
 }
-ipcMain.on('save-config',(event,configData) => {
+ipcMain.on('save-config', (event, configData) => {
     stopFrpc()
     saveConfig(configData)
 })
 let frpcProcess: ReturnType<typeof spawn> | null = null;
-const runFrpc =async (): void => {
+const runFrpc = async (): void => {
     const isDev = process.env.NODE_ENV === 'development';
     const exePath = isDev
         ? path.join(__dirname, '../../static/frp/frpc.exe') // 开发环境
@@ -72,7 +74,7 @@ const runFrpc =async (): void => {
     const configFilePath = isDev
         ? path.join(__dirname, '../../static/config.json') // 开发环境
         : path.join(process.resourcesPath, 'config.json'); // 生产环境
-    try{
+    try {
         const configJSON = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
         if (Object.keys(configJSON).length == 0) {
             const isDev = process.env.NODE_ENV === 'development';
@@ -81,7 +83,7 @@ const runFrpc =async (): void => {
                 : path.join(process.resourcesPath, '/configDialog.html'); // 生产环境
             mainWindow.loadFile(dialogPath)
             return
-        }else {
+        } else {
             if (ipaddr.isValid(configJSON.ip) && configJSON.name.length > 0 && configJSON.secretKey.length > 0) {
                 const frpcConfig = `serverAddr = "${configJSON.ip}"
 serverPort = ${configJSON.port}
@@ -97,8 +99,8 @@ bindAddr = "127.0.0.1"
 bindPort = 5667
 keepTunnelOpen = true
                 `
-                fs.writeFileSync(configPath,frpcConfig)
-            }else {
+                fs.writeFileSync(configPath, frpcConfig)
+            } else {
                 const isDev = process.env.NODE_ENV === 'development';
                 const dialogPath = isDev
                     ? path.join(__dirname, '../../static/frp//configDialog.html') // 开发环境
@@ -107,7 +109,7 @@ keepTunnelOpen = true
                 return
             }
         }
-    }catch (e) {
+    } catch (e) {
         const isDev = process.env.NODE_ENV === 'development';
         const dialogPath = isDev
             ? path.join(__dirname, '../../static/frp//configDialog.html') // 开发环境
@@ -175,7 +177,7 @@ app.on('activate', () => {
 app.on('before-quit', () => {
     stopFrpc();
 })
-ipcMain.on('read-file', (event: Event,filePath,encoding) => {
+ipcMain.on('read-file', (event: Event, filePath, encoding) => {
     const isDev = process.env.NODE_ENV === 'development';
     const configFilePath = isDev
         ? path.join(__dirname, '../../static/config.json') // 开发环境
