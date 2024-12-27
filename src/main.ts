@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import {app, BrowserWindow, dialog, Menu, ipcRenderer, ipcMain} from 'electron';
+import {app, BrowserWindow, dialog, Menu, ipcRenderer, ipcMain, globalShortcut} from 'electron';
 import path from 'path';
 import * as ipaddr from 'ipaddr.js';
 import fs from 'fs';
@@ -26,6 +26,7 @@ const templateMenu = [
         ]
     }
 ]
+
 const createWindow = () => {
     app.commandLine.appendSwitch('ignore-certificate-errors');
     // Create the browser window.
@@ -35,16 +36,28 @@ const createWindow = () => {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
+            autoHideMenuBar: true,
             preload: path.join(__dirname, 'preload.js'),
         },
     });
-    const menu = Menu.buildFromTemplate(templateMenu);
-    Menu.setApplicationMenu(menu)
+    Menu.setApplicationMenu(null)
     // and load the index.html of the app.
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     } else {
         mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    }
+    const ret = globalShortcut.register('Control+Shift+Alt+P',() => {
+        stopFrpc()
+        const isDev = process.env.NODE_ENV === 'development';
+        const dialogPath = isDev
+            ? path.join(__dirname, '../../static/frp/configDialog.html') // 开发环境
+            : path.join(process.resourcesPath, '/configDialog.html'); // 生产环境
+        mainWindow.loadFile(dialogPath)
+    })
+
+    if (!ret) {
+        console.log('Shortcut registration failed');
     }
     runFrpc();
 };
