@@ -8,7 +8,10 @@ import {spawn} from "child_process";
 import config from "../forge.config";
 
 let mainWindow: BrowserWindow;
-
+import started from 'electron-squirrel-startup'
+if (started){
+    app.quit();
+}
 const createWindow = () => {
     app.commandLine.appendSwitch('ignore-certificate-errors');
     // Create the browser window.
@@ -185,5 +188,3 @@ ipcMain.on('read-file', (event: Event, filePath, encoding) => {
         event.reply('read-file-response', error ? error.message : null, content);
     });
 })
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
