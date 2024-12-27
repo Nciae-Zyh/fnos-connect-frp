@@ -97,7 +97,7 @@ type = "xtcp"
 serverName = "${configJSON.name}"
 secretKey = "${configJSON.secretKey}"
 # 绑定本地端口以访问 SSH 服务
-bindAddr = "127.0.0.1"
+bindAddr = "0.0.0.0"
 bindPort = 5667
 keepTunnelOpen = true
                 `
