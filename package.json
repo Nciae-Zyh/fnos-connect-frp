@@ -1,7 +1,7 @@
 {
   "name": "fnos-connect-frp",
   "productName": "fnos-connect-frp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
