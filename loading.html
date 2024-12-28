@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正在加载</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+    .loading-container {
+      text-align: center;
+    }
+    .loading-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #ccc;
+      border-top: 5px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    .loading-hint {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #555;
+    }
+    .loading-hint span {
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+<div class="loading-container">
+  <div class="loading-title">正在加载系统，请稍后</div>
+  <div class="loading-spinner"></div>
+  <div class="loading-hint">如果长时间无反应，请按 <span>Ctrl+Shift+Alt+P</span> 重新配置或按<span>F5</span>刷新</div>
+</div>
+</body>
+</html>

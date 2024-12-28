@@ -15,6 +15,8 @@ const config: ForgeConfig = {
             'static/frp/frpc.toml',
             'static/frp/configDialog.html',
             'static/config.json',
+            'loading.html',
+            'static/frp/vue.global.js'
         ],
         icon: './static/favicon.ico'
     },

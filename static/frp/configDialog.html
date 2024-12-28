@@ -5,73 +5,75 @@
     <title>配置系统</title>
 </head>
 <body>
-<form id="dataConfig">
-    <label for="dataConfigFNOSPort">
-        FNNAS服务端口(HTTPS端口)：
-    </label>
-    <input type="number" id="dataConfigFNOSPort" name="dataConfigFNOSPort"/><br><br>
-    <label for="dataConfigIp">
-        frp服务器：
-    </label>
-    <input type="text" id="dataConfigIp" name="dataConfigIp"/><br><br>
-    <label for="dataConfigName">
-        frp服务名称：
-    </label>
-    <input type="text" id="dataConfigName" name="dataConfigName"/><br><br>
-    <label for="dataConfigSecretKey">
-        frp服务密钥：
-    </label>
-    <input type="text" id="dataConfigSecretKey" name="dataConfigSecretKey"/><br><br>
-    <label for="dataConfigPort">
-        frp服务端口：
-    </label>
-    <input type="text" id="dataConfigPort" name="dataConfigPort"/><br><br>
-</form>
-<button type="button" onclick="saveConfig()">
-保存
-</button>
-<script>
-    function saveConfig() {
-        const configData = {
-            ip: document.getElementById("dataConfigIp").value,
-            name: document.getElementById("dataConfigName").value,
-            secretKey: document.getElementById("dataConfigSecretKey").value,
-            port: document.getElementById("dataConfigPort").value,
-            FNOSPort: document.getElementById("dataConfigFNOSPort").value,
-        }
-        try{
-            const copyConfig = `serverAddr = "${configData.ip}"
-serverPort = ${configData.port}
+<script src="./vue.global.js"></script>
+<div id="app">
+    <form >
+        <label >
+            FNNAS服务端口(HTTPS端口)：
+        </label>
+        <input type="number" v-model="configData.FNOSPort"  name="dataConfigFNOSPort"/><br><br>
+        <label >
+            frp服务器：
+        </label>
+        <input v-model="configData.ip" type="text"  name="dataConfigIp"/><br><br>
+        <label >
+            frp服务名称：
+        </label>
+        <input v-model="configData.name" type="text"  name="dataConfigName"/><br><br>
+        <label >
+            frp服务密钥：
+        </label>
+        <input v-model="configData.secretKey" type="text"  name="dataConfigSecretKey"/><br><br>
+        <label >
+            frp服务端口：
+        </label>
+        <input v-model="configData.port" type="text"  name="dataConfigPort"/><br><br>
+    </form>
+    <button type="button" @click="saveConfig">保存</button>
+</div>
 
+<script>
+    const {createApp, ref} = Vue
+    const app = createApp({
+        setup() {
+            const configData = ref({
+            })
+            const saveConfig = () => {
+                try {
+                    const copyConfig = `serverAddr = "${configData.value.ip}"
+serverPort = ${configData.value.port}
 [[proxies]]
-name = "${configData.name}"
+name = "${configData.value.name}"
 type = "xtcp"
 # 只有共享密钥 (secretKey) 与服务器端一致的用户才能访问该服务
-secretKey = "${configData.secretKey}"
+secretKey = "${configData.value.secretKey}"
 localIP = "127.0.0.1"
-localPort = ${configData.FNOSPort}
+localPort = ${configData.value.FNOSPort}
         `
-            navigator.clipboard.writeText(copyConfig).then(() => {
-                alert(`FNNAS配置已经成功写入剪切板，若未配置FNOS端，请前往配置！`)
-                window.electronAPI.sendMessage('save-config',configData)
-            })
-        }catch (e) {
-            alert(JSON.stringify(e.message))
+                    navigator.clipboard.writeText(copyConfig).then(() => {
+                        alert(`FNNAS配置已经成功写入剪切板，若未配置FNOS端，请前往配置！`)
+                        window.electronAPI.sendMessage('save-config', JSON.parse(JSON.stringify(configData.value)))
+                    })
+                } catch (err) {
+                    alert(JSON.stringify(e.message))
+                }
+            }
+            return {
+                configData,
+                saveConfig
+            }
+        },
+        mounted() {
+            try{
+                window.electronAPI.fs.readFile().then(res => {
+                    this.configData = JSON.parse(res)
+                });
+            }catch (e) {
+                alert(e.message)
+            }
         }
-    }
-
-    try{
-        window.electronAPI.fs.readFile().then(res => {
-            const data = JSON.parse(res)
-            document.getElementById("dataConfigIp").value = data.ip
-            document.getElementById("dataConfigName").value = data.name
-            document.getElementById("dataConfigSecretKey").value = data.secretKey
-            document.getElementById("dataConfigPort").value = data.port
-            document.getElementById("dataConfigFNOSPort").value = data.FNOSPort
-        });
-    }catch (e) {
-        alert(e.message)
-    }
+    })
+    app.mount('#app')
 </script>
 </body>
 </html>
