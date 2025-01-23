@@ -84,6 +84,7 @@ const runFrpc = async (): void => {
             if (ipaddr.isValid(configJSON.ip) && configJSON.name.length > 0 && configJSON.secretKey.length > 0) {
                 const frpcConfig = `serverAddr = "${configJSON.ip}"
 serverPort = ${configJSON.port}
+auth.token = "${configJSON.token}"
 
 [[visitors]]
 name = "${configJSON.name}_visitor"

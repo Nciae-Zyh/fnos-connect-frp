@@ -9,17 +9,21 @@
 <div id="app">
     <form >
         <label >
-            FNNAS服务端口(HTTPS端口)：
-        </label>
-        <input type="number" v-model="configData.FNOSPort"  name="dataConfigFNOSPort"/><br><br>
-        <label >
             frp服务器：
         </label>
         <input v-model="configData.ip" type="text"  name="dataConfigIp"/><br><br>
         <label >
+            frp服务认证密钥：
+        </label>
+        <input v-model="configData.token" type="text"  name="dataConfigToken"/><br><br>
+        <label >
             frp服务名称：
         </label>
         <input v-model="configData.name" type="text"  name="dataConfigName"/><br><br>
+        <label >
+            飞牛服务端口(HTTPS端口)：
+        </label>
+        <input type="number" v-model="configData.FNOSPort"  name="dataConfigFNOSPort"/><br><br>
         <label >
             frp服务密钥：
         </label>
@@ -42,6 +46,7 @@
                 try {
                     const copyConfig = `serverAddr = "${configData.value.ip}"
 serverPort = ${configData.value.port}
+${configData.value.token?`auth.token = "${configData.value.token}"`:''}
 [[proxies]]
 name = "${configData.value.name}"
 type = "xtcp"
